@@ -189,7 +189,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 368091527}
-  - component: {fileID: 368091526}
+  - component: {fileID: 368091528}
   m_Layer: 0
   m_Name: SceneManager
   m_TagString: Untagged
@@ -197,18 +197,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &368091526
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 368091525}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7dc5e26ee2c72eb4e9adf6f7ed572946, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &368091527
 Transform:
   m_ObjectHideFlags: 0
@@ -224,6 +212,27 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &368091528
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 368091525}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b38deb161689dde42be96002260c30e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  screenSize: {x: 0, y: 0, z: 0}
+  origin: {x: 0, y: 0, z: 0}
+  originSize: 0.6
+  axisColor: {r: 1, g: 1, b: 1, a: 1}
+  lineColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  divisionColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  isDrawingOrigin: 1
+  isDrawingAxis: 1
+  isDrawingDivisions: 1
 --- !u!1 &1043325343
 GameObject:
   m_ObjectHideFlags: 0
@@ -236,7 +245,6 @@ GameObject:
   - component: {fileID: 1043325346}
   - component: {fileID: 1043325345}
   - component: {fileID: 1043325348}
-  - component: {fileID: 1043325349}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -330,27 +338,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2680e89c42a92a945a99e0f32d704453, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1043325349
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1043325343}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b38deb161689dde42be96002260c30e2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  screenSize: {x: 0, y: 0, z: 0}
-  origin: {x: 0, y: 0, z: 0}
-  originSize: 0.6
-  axisColor: {r: 1, g: 1, b: 1, a: 1}
-  lineColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-  divisionColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  isDrawingOrigin: 0
-  isDrawingAxis: 1
-  isDrawingDivisions: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

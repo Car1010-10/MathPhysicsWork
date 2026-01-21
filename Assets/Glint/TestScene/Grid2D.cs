@@ -2,21 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
 
 public class Grid2D : MonoBehaviour
 {
     public Vector3 screenSize;
     public Vector3 origin;
 
-    float gridSize = 10f; 
-    float minGridSize = 2f;
-    public float originSize = .6f;
+    float gridSize = 10.0f; 
+    float minGridSize = 2.0f;
+    public float originSize = 0.6f;
 
-    float point;
-    float topLine;
-    float bottomLine;
-    float leftLine;
-    float rightLine;
+    float pointOffset;
 
     int divisionCount = 5;
     int minDivisionCount = 2;
@@ -28,7 +25,6 @@ public class Grid2D : MonoBehaviour
     public bool isDrawingOrigin = false;
     public bool isDrawingAxis = true;
     public bool isDrawingDivisions = true;
-
 
     private void Start()
     {
@@ -48,7 +44,7 @@ public class Grid2D : MonoBehaviour
     /// </summary>
     void GetInput()
     {
-
+        
     }
 
     /// <summary>
@@ -56,20 +52,86 @@ public class Grid2D : MonoBehaviour
     /// </summary>
     void DrawGrid()
     {
+        Vector3 drawOffset = Vector3.zero;
+        Vector3 posPoint = Vector3.zero; 
+        Vector3 negPoint = Vector3.zero;
+        Color drawColor = lineColor;
 
+        int lineIndex = 0;
+
+        bool isStillDrawing = true;
+        while (isStillDrawing)
+        {
+            drawColor = lineColor;
+            // is Division Line 
+            if (isDrawingDivisions && ((lineIndex % divisionCount) == 0))
+            {
+                lineColor = divisionColor;
+            }
+            // is Axis Line
+            if (isDrawingAxis && (lineIndex == 0))
+            {
+                lineColor = axisColor;
+            }
+
+            drawOffset = new Vector3(gridSize, gridSize, 0) * lineIndex;
+            posPoint = origin + drawOffset;
+            negPoint = origin - drawOffset;
+
+            DrawGridLines(posPoint, axisColor);
+            DrawGridLines(negPoint, axisColor);
+
+            // check to end drawing
+            // Debug stop right away. 
+
+            lineIndex++;
+            if (lineIndex >= 35)
+            {
+                isStillDrawing = false;
+            }
+        }
+       
+
+        DrawOrigin();
+    }
+
+    /// <summary>
+    /// Draw horizonal and vertical line at point given with color given. 
+    /// </summary>
+    /// <param name="point"></param>
+    /// <param name="drawColor"></param>
+    void DrawGridLines(Vector3 point, Color drawColor)
+    {
+
+        Vector3 top     = new Vector3(0,            1,      0);
+        Vector3 bottom  = new Vector3(0,            -1,      0);
+        Vector3 left    = new Vector3(-1,            0,      0);
+        Vector3 right   = new Vector3(1,            0,      0);
+
+        DrawLine(top, bottom, drawColor); 
+        DrawLine(left, right, drawColor);   
     }
 
     /// <summary>
     /// Draws the Diamond symbol at the Origin
     /// </summary>
     public void DrawOrigin()
-    {
-        point = gridSize * originSize;
+    {  
+        pointOffset = gridSize * originSize;
 
-        //topLine = origin.y + Vector3(0, point, Color.white);
-        //bottomLine = origin.y + DrawLine(0, point, Color.white);
-        //rightLine = origin.y + DrawLine(0, point, Color.white);
-        //leftLine = origin.y + DrawLine(0, point, Color.white);
+        Vector3 top = origin;
+        top.y += pointOffset; 
+        Vector3 bottom = origin;
+        bottom.y -= pointOffset;
+        Vector3 left= origin;
+        left.x -= pointOffset;
+        Vector3 right = origin ;
+        right.x += pointOffset;
+
+        DrawLine(top, right, Color.red);
+        DrawLine(right, bottom, Color.red);
+        DrawLine(bottom, left, Color.red);
+        DrawLine(left, top, Color.red);
     }
 
     /// <summary>
