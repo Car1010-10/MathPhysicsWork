@@ -103,10 +103,10 @@ public class Grid2D : MonoBehaviour
     void DrawGridLines(Vector3 point, Color drawColor)
     {
 
-        Vector3 top     = new Vector3(0,            1,      0);
-        Vector3 bottom  = new Vector3(0,            -1,      0);
-        Vector3 left    = new Vector3(-1,            0,      0);
-        Vector3 right   = new Vector3(1,            0,      0);
+        Vector3 top     = new Vector3(0,            point.y,      0); //y
+        Vector3 bottom  = new Vector3(0,            point.y,      0); //y
+        Vector3 left    = new Vector3(point.x,            0,      0); //x
+        Vector3 right   = new Vector3(point.x,            0,      0); //x
 
         DrawLine(top, bottom, drawColor); 
         DrawLine(left, right, drawColor);   
