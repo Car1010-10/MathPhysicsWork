@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UIElements;
 
 public class Grid2D : MonoBehaviour
 {
@@ -88,6 +87,7 @@ public class Grid2D : MonoBehaviour
             if (lineIndex >= 35)
             {
                 isStillDrawing = false;
+                Debug.Log("stop");
             }
         }
        
@@ -102,14 +102,14 @@ public class Grid2D : MonoBehaviour
     /// <param name="drawColor"></param>
     void DrawGridLines(Vector3 point, Color drawColor)
     {
-
-        Vector3 top     = new Vector3(0,            point.y,      0); //y
-        Vector3 bottom  = new Vector3(0,            point.y,      0); //y
-        Vector3 left    = new Vector3(point.x,            0,      0); //x
-        Vector3 right   = new Vector3(point.x,            0,      0); //x
-
+        Debug.Log("Drawing lines");
+        Vector3 top     = new Vector3(point.x,            Screen.height,      0); //y
+        Vector3 bottom  = new Vector3(point.x,            Screen.height,      0); //y
+        Vector3 left    = new Vector3(Screen.width,            point.y,      0); //x
+        Vector3 right   = new Vector3(Screen.width,            point.y,      0); //x
+         
         DrawLine(top, bottom, drawColor); 
-        DrawLine(left, right, drawColor);   
+        DrawLine(right, left, drawColor);   
     }
 
     /// <summary>
@@ -128,10 +128,11 @@ public class Grid2D : MonoBehaviour
         Vector3 right = origin ;
         right.x += pointOffset;
 
-        DrawLine(top, right, Color.red);
-        DrawLine(right, bottom, Color.red);
-        DrawLine(bottom, left, Color.red);
-        DrawLine(left, top, Color.red);
+        DrawLine(top, right, axisColor);
+        DrawLine(right, bottom, axisColor);
+        DrawLine(bottom, left, axisColor);
+        DrawLine(left, top, axisColor);
+        Debug.Log("Drew Origin");
     }
 
     /// <summary>
