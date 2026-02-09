@@ -8,14 +8,14 @@ public class Grid2D : MonoBehaviour
     public Vector3 screenSize;
     public Vector3 origin;
 
-    float gridSize = 10.0f; 
-    float minGridSize = 2.0f;
+    public float gridSize = 10.0f; 
+    public float minGridSize = 2.0f;
     public float originSize = 0.6f;
 
     float pointOffset;
 
-    int divisionCount = 5;
-    int minDivisionCount = 2;
+    public int divisionCount = 5;
+    public int minDivisionCount = 2;
 
     public Color axisColor = Color.white;
     public Color lineColor = Color.gray;
@@ -43,7 +43,65 @@ public class Grid2D : MonoBehaviour
     /// </summary>
     void GetInput()
     {
+        Mouse mouse = Mouse.current; 
+        Keyboard kb = Keyboard.current;
+
+        if ((kb == null) || (mouse == null))
+        {
+            Debug.LogWarning("No Keyboard or Mouse");
+            return; 
+        }
+        // If you get here mouse and kb are valid objects. 
+
+
+        bool controlKey = kb.ctrlKey.isPressed; 
+        Vector2 scroll = mouse.scroll.ReadValue();
+
+        if (( scroll.y > 0) && !controlKey) 
+        {
+            gridSize++; 
+        }
+        if (( scroll.y < 0 ) && !controlKey)
+        {
+            gridSize--; 
+            if (  gridSize <= minGridSize )
+            {
+                gridSize = minGridSize;
+            }
+        }
+
+        if ((scroll.y > 0) && controlKey)
+        {
+            divisionCount++;
+        }
+        if ((scroll.y < 0) && controlKey)
+        {
+            divisionCount--;
+            if ( divisionCount <= minDivisionCount)
+            {
+                divisionCount = minDivisionCount;
+            }
+        }
         
+        if (mouse.leftButton.isPressed)
+        {
+            origin = mouse.position.ReadValue(); 
+        }
+
+        if (kb.digit1Key.wasPressedThisFrame)
+        {
+            isDrawingOrigin = !isDrawingOrigin; 
+        }
+
+        if (kb.digit2Key.wasPressedThisFrame)
+        {
+            isDrawingAxis = !isDrawingAxis; 
+        }
+
+        if (kb.digit3Key.wasPressedThisFrame)
+        {
+            isDrawingDivisions = !isDrawingDivisions;
+        }
     }
 
     /// <summary>
@@ -65,29 +123,28 @@ public class Grid2D : MonoBehaviour
             // is Division Line 
             if (isDrawingDivisions && ((lineIndex % divisionCount) == 0))
             {
-                lineColor = divisionColor;
+                drawColor = divisionColor;
             }
             // is Axis Line
             if (isDrawingAxis && (lineIndex == 0))
             {
-                lineColor = axisColor;
+                drawColor = axisColor;
             }
 
             drawOffset = new Vector3(gridSize, gridSize, 0) * lineIndex;
             posPoint = origin + drawOffset;
             negPoint = origin - drawOffset;
 
-            DrawGridLines(posPoint, axisColor);
-            DrawGridLines(negPoint, axisColor);
+            DrawGridLines(posPoint, drawColor);
+            DrawGridLines(negPoint, drawColor);
 
             // check to end drawing
             // Debug stop right away. 
 
             lineIndex++;
-            if (lineIndex >= 35)
+            if (IsOffScreen(posPoint) && IsOffScreen(negPoint))
             {
-                isStillDrawing = false;
-                Debug.Log("stop");
+                isStillDrawing = false;              
             }
         }
        
@@ -102,21 +159,25 @@ public class Grid2D : MonoBehaviour
     /// <param name="drawColor"></param>
     void DrawGridLines(Vector3 point, Color drawColor)
     {
-        Debug.Log("Drawing lines");
-        Vector3 top     = new Vector3(point.x,            Screen.height,      0); //y
-        Vector3 bottom  = new Vector3(point.x,            Screen.height,      0); //y
-        Vector3 left    = new Vector3(Screen.width,            point.y,      0); //x
-        Vector3 right   = new Vector3(Screen.width,            point.y,      0); //x
+        Vector3 top     = new Vector3(point.x,                     0,      0); //y
+        Vector3 bottom  = new Vector3(point.x,          screenSize.y,      0); //y
+        Vector3 left    = new Vector3(screenSize.x,         point.y,      0); //x
+        Vector3 right   = new Vector3(0,                    point.y,      0); //x
          
         DrawLine(top, bottom, drawColor); 
         DrawLine(right, left, drawColor);   
     }
-
+    
     /// <summary>
     /// Draws the Diamond symbol at the Origin
     /// </summary>
     public void DrawOrigin()
     {  
+        if (!isDrawingOrigin)
+        {
+            return; 
+        }
+
         pointOffset = gridSize * originSize;
 
         Vector3 top = origin;
@@ -132,7 +193,15 @@ public class Grid2D : MonoBehaviour
         DrawLine(right, bottom, axisColor);
         DrawLine(bottom, left, axisColor);
         DrawLine(left, top, axisColor);
-        Debug.Log("Drew Origin");
+    }
+
+    public bool IsOffScreen(Vector3 point)
+    {
+        /// Can you tell me how to get to Seaseme Street
+        bool vertical = ((point.y < 0) || (point.y > screenSize.y));
+        bool horirzonal = ((point.x < 0) || (point.x > screenSize.x));
+
+        return (vertical && horirzonal);
     }
 
     /// <summary>
