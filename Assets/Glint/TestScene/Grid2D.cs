@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.NetworkInformation;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -17,6 +18,9 @@ public class Grid2D : MonoBehaviour
     public int divisionCount = 5;
     public int minDivisionCount = 2;
 
+    public float ScaleGrid2Screen = 5.0f;
+    public float ScaleScreen2Grid = 2.5f;
+
     public Color axisColor = Color.white;
     public Color lineColor = Color.gray;
     public Color divisionColor = Color.yellow;
@@ -24,6 +28,8 @@ public class Grid2D : MonoBehaviour
     public bool isDrawingOrigin = false;
     public bool isDrawingAxis = true;
     public bool isDrawingDivisions = true;
+    public bool isDrawingGrid = true;
+    public bool isDrawingObject = true;
 
     private void Start()
     {
@@ -102,6 +108,16 @@ public class Grid2D : MonoBehaviour
         {
             isDrawingDivisions = !isDrawingDivisions;
         }
+
+        if (kb.digit4Key.wasPressedThisFrame)
+        {
+            isDrawingGrid = !isDrawingGrid;
+        }
+
+        if (kb.digit5Key.wasPressedThisFrame)
+        {
+            isDrawingObject = !isDrawingObject;
+        }
     }
 
     /// <summary>
@@ -109,6 +125,11 @@ public class Grid2D : MonoBehaviour
     /// </summary>
     void DrawGrid()
     {
+        if (!isDrawingGrid)
+        {
+            return;
+        }
+
         Vector3 drawOffset = Vector3.zero;
         Vector3 posPoint = Vector3.zero; 
         Vector3 negPoint = Vector3.zero;
@@ -195,6 +216,16 @@ public class Grid2D : MonoBehaviour
         DrawLine(left, top, axisColor);
     }
 
+    public void DrawObject(DrawingObject lineObj, bool DrawOnGrid = true)
+    {
+        if (!isDrawingObject)
+        {
+            return;
+        }
+
+
+    }
+
     public bool IsOffScreen(Vector3 point)
     {
         /// Can you tell me how to get to Seaseme Street
@@ -202,6 +233,40 @@ public class Grid2D : MonoBehaviour
         bool horirzonal = ((point.x < 0) || (point.x > screenSize.x));
 
         return (vertical && horirzonal);
+    }
+
+    public static float V3ToAngle(Vector3 startPoint, Vector3 endPoint)
+    {
+        //Use Atan2 to convert
+        //don't forget to convert from radians
+
+        //Mathf.Atan2(startPoint.x, endPoint.y); (180f/Mathf.PI);
+        return Mathf.Atan2(startPoint.x, endPoint.y) * (180f / Mathf.PI); //not finished
+    }
+
+    public static float LineToAngle(Line line)
+    {
+        //Calls V3toAngle using the information from the line object
+
+
+        Glint.AddCommand(line);
+        return 10f; //not finished
+    }
+
+    public static Vector3 RotatePoint(Vector3 Center, float angle, Vector3 pointIN)
+    {
+        //For a given center point and angle, determines the new rotated of a given point (pointIN)
+        /* 
+        point = pointIN-Center; // Center is not at 0,0, so translate from Center to 0,0 Origin 
+        xnew = point.X * cos(angle) - point.Y * sin(angle);
+        ynew = point.X * sin(angle) + point.Y * cos(angle);
+        */
+        
+        Vector3 point = pointIN - Center;
+        float xnew = point.x * Mathf.Cos(angle) - point.y * Mathf.Sin(angle);
+        float ynew = point.x * Mathf.Sin(angle) + point.y * Mathf.Cos(angle);
+
+        return new Vector3(xnew, ynew, 0);//not finished
     }
 
     /// <summary>
@@ -228,7 +293,7 @@ public class Grid2D : MonoBehaviour
     /// Draws the given line object. If you are creating new line object, use the overload that takes parameters instead. 
     /// </summary>
     /// <param name="line"></param>
-    public void DrawLine(Line line)
+    public void DrawLine(Line line, bool drawOnGrid = true)
     {
         Glint.AddCommand(line);
     }
@@ -239,7 +304,7 @@ public class Grid2D : MonoBehaviour
     /// <param name="start"></param>
     /// <param name="end"></param>
     /// <param name="color"></param>
-    public void DrawLine(Vector3 start, Vector3 end, Color color)
+    public void DrawLine(Vector3 start, Vector3 end, Color color, bool drawOnGrid = true)
     {
         Glint.AddCommand(new Line(start, end, color));
     }
