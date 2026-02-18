@@ -4,7 +4,7 @@ using UnityEngine;
 
 
 
-class Arrow : DrawingObject
+public class Arrow : DrawingObject
 {
 
     public override void Initalize()

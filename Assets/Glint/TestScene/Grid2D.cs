@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Net.NetworkInformation;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -31,11 +30,16 @@ public class Grid2D : MonoBehaviour
     public bool isDrawingGrid = true;
     public bool isDrawingObject = true;
 
+    public List<DrawingObject> drawingObjects = new List<DrawingObject>(); 
+
     private void Start()
     {
         screenSize = new Vector3(Screen.width, Screen.height);
         origin = new Vector3(Screen.width / 2, Screen.height / 2);
 
+        
+        //drawingObjects.Add("Arrow");
+        //DrawingObject obj = new DrawingObject("Arrows");
     }
 
     void Update()
@@ -58,8 +62,6 @@ public class Grid2D : MonoBehaviour
             return; 
         }
         // If you get here mouse and kb are valid objects. 
-
-
         bool controlKey = kb.ctrlKey.isPressed; 
         Vector2 scroll = mouse.scroll.ReadValue();
 
@@ -169,7 +171,6 @@ public class Grid2D : MonoBehaviour
             }
         }
        
-
         DrawOrigin();
     }
 
@@ -276,7 +277,8 @@ public class Grid2D : MonoBehaviour
     /// <returns>Vector3 translated to Screen Space</returns>
     public Vector3 GridToScreen(Vector3 gridSpace)
     {
-        return Vector3.zero;
+        screenSize = gridSpace;
+        return gridSpace;
     }
 
     /// <summary>
@@ -286,7 +288,9 @@ public class Grid2D : MonoBehaviour
     /// <returns>Vector3 translated to Grid Space</returns>
     public Vector3 ScreenToGrid(Vector3 screenSpace)
     {
-        return Vector3.zero;
+        gridSize = screenSpace.x;
+        gridSize = screenSpace.y;
+        return screenSpace;
     }
 
     /// <summary>

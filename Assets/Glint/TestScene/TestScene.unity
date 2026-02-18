@@ -229,12 +229,19 @@ MonoBehaviour:
   gridSize: 50
   minGridSize: 2
   originSize: 0.6
+  divisionCount: 5
+  minDivisionCount: 2
+  ScaleGrid2Screen: 5
+  ScaleScreen2Grid: 2.5
   axisColor: {r: 1, g: 1, b: 1, a: 1}
   lineColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   divisionColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   isDrawingOrigin: 1
   isDrawingAxis: 1
   isDrawingDivisions: 1
+  isDrawingGrid: 1
+  isDrawingObject: 1
+  drawingObjects: []
 --- !u!1 &1043325343
 GameObject:
   m_ObjectHideFlags: 0
