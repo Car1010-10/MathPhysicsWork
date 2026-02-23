@@ -49,9 +49,16 @@ public class DrawingObject
            
             for (int i = 0; i < Lines.Count; i++)
             {
-              
                 grid.DrawLine(Lines[i]);
             }
+
+            /*
+             * Same as for loop above
+            foreach (Line line in Lines)
+            {
+                grid.DrawLine(line); 
+            }    
+            */
         
         }
         else
