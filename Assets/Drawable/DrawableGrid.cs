@@ -1,10 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem; 
+using UnityEngine.InputSystem;
 
 public class DrawableGrid : MonoBehaviour
 {
+    public static DrawableGrid Instance;
 
     public Vector3 screenSize;
     public Vector3 origin;
@@ -20,24 +21,36 @@ public class DrawableGrid : MonoBehaviour
     public Color lineColor = Color.gray;
     public Color divisionColor = Color.yellow;
 
-    public bool isDrawingObjects = true; 
-    public bool isDrawingTheGrid = true; 
+    public bool isDrawingObjects = true;
+    public bool isDrawingTheGrid = true;
     public bool isDrawingOrigin = true;
     public bool isDrawingAxis = true;
+    public bool isDrawingAxisOnly = false;
     public bool isDrawingDivisions = true;
+    public bool isTickAllScenes = false;
+    public bool isTickingScenes = true;
+    public bool isTickingGrid = true;
 
-    public int SceneIndex = 0; 
+    public Vector3 MousePosition = Vector3.zero;
+
+    public int SceneIndex = 0;
     public List<List<DrawableObject>> SceneList;
     public List<string> SceneListName;
+
+    private void Awake()
+    {
+        // Lazy Singleton
+        Instance = this;
+    }
 
     private void Start()
     {
         screenSize = new Vector3(Screen.width, Screen.height);
         origin = new Vector3(Screen.width / 2, Screen.height / 2);
 
-        SceneList = new List< List<DrawableObject> >();
+        SceneList = new List<List<DrawableObject>>();
         SceneListName = new List<string>();
-        SetupScenes(); 
+        SetupScenes();
     }
 
     public virtual void SetupScenes()
@@ -47,24 +60,64 @@ public class DrawableGrid : MonoBehaviour
 
     void Update()
     {
-        GetInput(); 
+        GetInput();
+
+        TickGrid();
+        TickScenes();
+
         DrawGrid();
 
-        DrawScene(); 
+        DrawScene();
+    }
+
+    public void TickScenes()
+    {
+        if (!isTickingScenes) { return; }
+
+        if (isTickAllScenes)
+        {
+            foreach (List<DrawableObject> scene in SceneList)
+            {
+                TickThisScene(scene);
+            }
+        }
+        else
+        {
+            TickThisScene(SceneList[SceneIndex]);
+        }
+    }
+
+    public void TickThisScene(List<DrawableObject> scene)
+    {
+        foreach (DrawableObject obj in scene)
+        {
+            obj.Tick();
+        }
+    }
+
+    public void TickGrid()
+    {
+        if (!isTickingGrid) { return; }
+        Tick();
+    }
+
+    public virtual void Tick()
+    {
+
     }
 
     public void SelectNextScene()
     {
-        SceneIndex++; 
+        SceneIndex++;
         if (SceneIndex >= SceneList.Count)
         {
-            SceneIndex = 0; 
+            SceneIndex = 0;
         }
     }
 
     public int AddScene(string newSceneName = null)
     {
-        int sceneIndex = SceneList.Count; 
+        int sceneIndex = SceneList.Count;
         SceneList.Add(new List<DrawableObject>());
 
         if (newSceneName != null)
@@ -76,7 +129,7 @@ public class DrawableGrid : MonoBehaviour
             SceneListName.Add("Scene #" + SceneListName.Count);
         }
 
-        return sceneIndex; 
+        return sceneIndex;
     }
 
     public void AddMultipleScenes(int newScenesToAdd)
@@ -90,19 +143,18 @@ public class DrawableGrid : MonoBehaviour
         for (int i = 0; i < newScenesToAdd; i++)
         {
             SceneList.Add(new List<DrawableObject>());
-            SceneListName.Add("Scene #" + SceneListName.Count); 
+            SceneListName.Add("Scene #" + SceneListName.Count);
         }
     }
 
-    public void SetSceneName( int sceneNumber, string newSceneName)
+    public void SetSceneName(int sceneNumber, string newSceneName)
     {
         if (sceneNumber >= SceneListName.Count)
         {
             Debug.LogWarning("Invalid Scene Number");
             return;
         }
-
-        SceneListName[sceneNumber] = newSceneName; 
+        SceneListName[sceneNumber] = newSceneName;
     }
 
     public string GetCurrentSceneName()
@@ -139,8 +191,6 @@ public class DrawableGrid : MonoBehaviour
 
     }
 
-
-
     /// <summary>
     /// Grabs Input 
     /// </summary>
@@ -154,10 +204,11 @@ public class DrawableGrid : MonoBehaviour
             return;
         }
 
+        MousePosition = mouse.position.ReadValue();
         // Place the Origin 
         if (mouse.middleButton.isPressed)
         {
-            origin = mouse.position.ReadValue();
+            origin = MousePosition;
         }
 
         // Check Mouse Scroll Wheel and update Grid Size
@@ -196,7 +247,7 @@ public class DrawableGrid : MonoBehaviour
 
         if (kb.digit1Key.wasPressedThisFrame)
         {
-            isDrawingDivisions = !isDrawingDivisions; 
+            isDrawingDivisions = !isDrawingDivisions;
         }
 
         if (kb.digit2Key.wasPressedThisFrame)
@@ -221,10 +272,8 @@ public class DrawableGrid : MonoBehaviour
 
         if (kb.tabKey.wasPressedThisFrame)
         {
-            SelectNextScene(); 
+            SelectNextScene();
         }
-
-
     }
 
     /// <summary>
@@ -235,11 +284,11 @@ public class DrawableGrid : MonoBehaviour
         if (!isDrawingTheGrid)
         {
             // Ignore the rest of this function 
-            return; 
+            return;
         }
 
         Vector3 posPoint = Vector3.zero;
-        Vector3 negPoint = Vector3.zero; 
+        Vector3 negPoint = Vector3.zero;
         Vector3 pointOffset = Vector3.zero;
         int pointIndex = 0;
 
@@ -249,17 +298,17 @@ public class DrawableGrid : MonoBehaviour
         while (StillDrawing)
         {
             drawColor = lineColor;
-            if ((pointIndex % divisionCount == 0) && isDrawingDivisions )
+            if ((pointIndex % divisionCount == 0) && isDrawingDivisions)
             {
-                drawColor = divisionColor; 
+                drawColor = divisionColor;
             }
-            if ( (pointIndex == 0 ) && isDrawingAxis )
+            if ((pointIndex == 0) && isDrawingAxis)
             {
                 drawColor = axisColor;
-               
+
             }
 
-            pointOffset = new Vector3(gridSize, gridSize, 0) * pointIndex; 
+            pointOffset = new Vector3(gridSize, gridSize, 0) * pointIndex;
             posPoint = origin + pointOffset;
             negPoint = origin - pointOffset;
 
@@ -268,35 +317,36 @@ public class DrawableGrid : MonoBehaviour
 
             pointIndex++;
 
-            if ( IsOffScreen(negPoint) && IsOffScreen(posPoint))
+            if (IsOffScreen(negPoint) && IsOffScreen(posPoint))
             {
                 StillDrawing = false;
             }
-       
+
+            if (isDrawingAxisOnly)
+            {
+                StillDrawing = false;
+            }
         }
-
         DrawOrigin();
-
-
     }
 
     public bool IsOffScreen(Vector3 point)
     {
         /// Can you tell me how to get to Seaseme Street 
-        bool vertical    = ( (point.y < 0) || (point.y > screenSize.y) );
-        bool horirzonal  = ( (point.x < 0) || (point.x > screenSize.x));
+        bool vertical = ((point.y < 0) || (point.y > screenSize.y));
+        bool horirzonal = ((point.x < 0) || (point.x > screenSize.x));
 
-        return ( vertical && horirzonal );
+        return (vertical && horirzonal);
     }
 
     public void DrawGridLines(Vector3 drawPoint, Color drawColor)
     {
-        Vector3 Top     = new Vector3(drawPoint.x,  0,              0);
-        Vector3 Bottom  = new Vector3(drawPoint.x,  screenSize.y,   0);
-        Vector3 Left    = new Vector3(0,            drawPoint.y,    0);
-        Vector3 Right   = new Vector3(screenSize.x, drawPoint.y,    0);
+        Vector3 Top = new Vector3(drawPoint.x, 0, 0);
+        Vector3 Bottom = new Vector3(drawPoint.x, screenSize.y, 0);
+        Vector3 Left = new Vector3(0, drawPoint.y, 0);
+        Vector3 Right = new Vector3(screenSize.x, drawPoint.y, 0);
 
-        DrawLine(Top, Bottom, drawColor, false); 
+        DrawLine(Top, Bottom, drawColor, false);
         DrawLine(Left, Right, drawColor, false);
     }
 
@@ -307,19 +357,19 @@ public class DrawableGrid : MonoBehaviour
     {
         if (!isDrawingOrigin)
         {
-            return; 
+            return;
         }
 
         float offset = gridSize * originSize;
         //Debug.Log("draw origin: " + offset );
 
         Vector3 Top = origin;
-        Top.y += offset; 
+        Top.y += offset;
         Vector3 Bottom = origin;
         Bottom.y -= offset;
         Vector3 Left = origin;
         Left.x -= offset;
-        Vector3 Right = origin; 
+        Vector3 Right = origin;
         Right.x += offset;
 
         DrawLine(Top, Left, axisColor, false);
@@ -336,7 +386,7 @@ public class DrawableGrid : MonoBehaviour
     /// <returns>Vector3 translated to Screen Space</returns>
     public Vector3 GridToScreen(Vector3 gridSpace)
     {
-        Vector3 result = origin + (gridSpace * gridSize); 
+        Vector3 result = origin + (gridSpace * gridSize);
 
         return result;
     }
@@ -348,7 +398,7 @@ public class DrawableGrid : MonoBehaviour
     /// <returns>Vector3 translated to Grid Space</returns>
     public Vector3 ScreenToGrid(Vector3 screenSpace)
     {
-        Vector3 result =  (screenSpace - origin) / gridSize;
+        Vector3 result = (screenSpace - origin) / gridSize;
 
         return result;
     }
@@ -361,10 +411,10 @@ public class DrawableGrid : MonoBehaviour
     {
         if (!drawOnGrid)
         {
-            Glint.AddCommand(line); 
+            Glint.AddCommand(line);
             return;
         }
-        DrawLine(line.start, line.end, line.color, true); 
+        DrawLine(line.start, line.end, line.color, true);
     }
 
     /// <summary>
@@ -378,9 +428,8 @@ public class DrawableGrid : MonoBehaviour
         if (!drawOnGrid)
         {
             Glint.AddCommand(new Line(start, end, color));
-            return; 
+            return;
         }
         Glint.AddCommand(new Line(GridToScreen(start), GridToScreen(end), color));
-
     }
 }

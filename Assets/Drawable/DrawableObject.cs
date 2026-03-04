@@ -28,6 +28,11 @@ public class DrawableObject
 
     }
 
+    public virtual void Tick()
+    {
+         
+    }
+
     public void AddLineToObject(Line line)
     {
         LineList.Add(line);
