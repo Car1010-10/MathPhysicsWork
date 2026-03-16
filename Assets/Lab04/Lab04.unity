@@ -236,7 +236,12 @@ MonoBehaviour:
   isDrawingTheGrid: 1
   isDrawingOrigin: 1
   isDrawingAxis: 1
-  isDrawingDivisions: 1
+  isDrawingAxisOnly: 1
+  isDrawingDivisions: 0
+  isTickAllScenes: 0
+  isTickingScenes: 1
+  isTickingGrid: 1
+  MousePosition: {x: 0, y: 0, z: 0}
   SceneIndex: 0
   SceneListName: []
 --- !u!1 &796140856

@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Drawing.Glint;
 using System;
 
 [Serializable]
@@ -12,6 +11,8 @@ public class DrawableObject
 
     // Transform information 
     public Vector3 Position = Vector3.zero;
+
+    //value in radians
     public float Roation = 0;
     public Vector3 Scale = Vector3.one;
 
@@ -79,12 +80,55 @@ public class DrawableObject
         translatedLine.end.z *= Scale.z;
 
         // Rotate
-
+        translatedLine.start = RotatePoint(Vector3.zero, translatedLine.start, Roation);
+        translatedLine.end = RotatePoint(Vector3.zero, translatedLine.end, Roation);
 
         // Position
         translatedLine.start += Position;
         translatedLine.end += Position;
 
         return translatedLine;
+    }
+
+    public static float V3ToAngle(Vector3 startPoint, Vector3 endPoint)
+    {
+        Vector3 lineVector = endPoint - startPoint;
+        return Mathf.Atan2(lineVector.y, lineVector.x);
+    }
+
+    public static float V3ToAngleinDegrees(Vector3 startPoint, Vector3 endPoint)
+    {
+        Vector3 lineVector = endPoint - startPoint;
+        float radians = MathF.Atan2(lineVector.y, lineVector.x);
+        //Mathf.Rad2Deg = 180/PI
+        return (radians * Mathf.Rad2Deg);
+    }
+
+    public static float LineToAngle(Line line)
+    {
+        return V3ToAngle(line.start, line.end);
+    }
+
+    public static Vector3 RotatePoint(Vector3 center, Vector3 pointIN, float angleInRadians)
+    {
+        //if not at 0,0,0 --- Translate back to origin
+        Vector3 PointAtZero = pointIN - center;
+        Vector3 result = Vector3.zero;
+
+        result.x = PointAtZero.x * Mathf.Cos(angleInRadians) - PointAtZero.y * Mathf.Sin(angleInRadians);
+        result.y = PointAtZero.x * Mathf.Sin(angleInRadians) + PointAtZero.y * Mathf.Cos(angleInRadians);
+
+        // translate back to center point
+        return (result + center);
+    }
+
+    public float GetRotationinDegrees()
+    {
+        return (Roation * Mathf.Rad2Deg);
+    }
+
+    public void SetRotationinDegrees(float degrees)
+    {
+        Roation = (degrees * Mathf.Deg2Rad);
     }
 }
