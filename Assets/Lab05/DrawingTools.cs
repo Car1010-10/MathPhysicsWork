@@ -11,10 +11,29 @@ public class DrawingTools
     /// <param name="grid"> if grid = null, info in Rect is in screen coordinates, else info is in grid space</param>
     public static void DrawRectangle(Rect box, Color color, DrawableGrid grid = null)
     {
-       
+        Line Bottom = new Line(new Vector2(box.X, box.Y), new Vector2((box.X + box.Width), box.Y), color);
+        Line Right = new Line(new Vector2((box.X + box.Width), box.Y), new Vector2((box.X + box.Width), (box.Y + box.Height)), color);
+        Line Top = new Line(new Vector2((box.X + box.Width), (box.Y + box.Height)), new Vector2(box.X, (box.Y + box.Height)), color);
+        Line Left = new Line(new Vector2(box.X, (box.Y + box.Height)), new Vector2(box.X, box.Y), color);
+
+        if (grid == null)
+        {
+            //info is in Screen Space
+            Glint.AddCommand(Bottom);
+            Glint.AddCommand(Right);
+            Glint.AddCommand(Top);
+            Glint.AddCommand(Left);
+        }
+        else
+        {
+            grid.DrawLine(Bottom);
+            grid.DrawLine(Right);
+            grid.DrawLine(Top);
+            grid.DrawLine(Left);
+        }
        
     }
-
+    
     /// <summary>
     /// Find a point on a circle with given information
     /// </summary>
@@ -24,8 +43,12 @@ public class DrawingTools
     /// <returns>point in Vector3</returns>
     public static Vector3 CircleRadiusPoint(Vector3 origin, float angle, float radius)
     {
-        // stub code, replace this
-        return Vector3.zero;
+        Vector3 result = Vector3.zero;
+        result.x = Mathf.Cos(angle * Mathf.Deg2Rad) * radius;
+        result.y = Mathf.Sin(angle * Mathf.Deg2Rad) * radius;
+        result += origin;
+
+        return result;
     }
 
     /// <summary>
@@ -37,8 +60,12 @@ public class DrawingTools
     /// <returns>point in Vector3</returns>
     public static Vector3 EllipseRadiusPoint(Vector3 origin, float angle, Vector3 axis)
     {
-        // stub code, replace this
-        return Vector3.zero;
+        Vector3 result = Vector3.zero;
+        result.x = Mathf.Cos(angle * Mathf.Deg2Rad) * axis.x;
+        result.y = Mathf.Sin(angle * Mathf.Deg2Rad) * axis.y;
+        result += origin;
+
+        return result;
     }
 
     /// <summary>
@@ -50,6 +77,23 @@ public class DrawingTools
     /// <param name="color">Color to draw, use Color.####</param>
     public static void DrawCircle(Vector3 position, float radius, int sides, Color color)
     {
+        int numberofSides = sides;
+        if (numberofSides < 3) { numberofSides = 12; }
+
+        float degreeStep = 360 / numberofSides;
+        Vector3 lineStart = Vector3.zero;
+        Vector3 lineEnd = Vector3.zero;
+        Line newline;
+
+        for (int i = 0; i < numberofSides; i++)
+        {
+            lineStart = CircleRadiusPoint(position, (degreeStep * i), radius);
+            //might get some floating point squirly stuff cuz its not perfect
+            lineEnd = CircleRadiusPoint(position, (degreeStep * (i+1)), radius);
+            newline = new Line(lineStart, lineEnd, color);
+
+            Glint.AddCommand(newline);
+        }
 
     }
 
@@ -62,6 +106,23 @@ public class DrawingTools
     /// <param name="color">Color to draw, use Color.####</param>
     public static void DrawEllipse(Vector3 position, Vector2 axis, int sides, Color color)
     {
+        int numberofSides = sides;
+        if (numberofSides < 3) { numberofSides = 12; }
+
+        float degreeStep = 360 / numberofSides;
+        Vector3 lineStart = Vector3.zero;
+        Vector3 lineEnd = Vector3.zero;
+        Line newline;
+
+        for (int i = 0; i < numberofSides; i++)
+        {
+            lineStart = EllipseRadiusPoint(position, (degreeStep * i), axis);
+            //might get some floating point squirly stuff cuz its not perfect
+            lineEnd = EllipseRadiusPoint(position, (degreeStep * (i + 1)), axis);
+            newline = new Line(lineStart, lineEnd, color);
+
+            Glint.AddCommand(newline);
+        }
 
     }
 
@@ -69,18 +130,48 @@ public class DrawingTools
     {
         DrawableObject newCircle = new DrawableObject();
 
-        // The heavy lift of building an circle is in DrawCircle
-        // Reformat the code to use AddLineToObject(Vector3 start, Vector3 end, Color color)
+        int numberofSides = sides;
+        if (numberofSides < 3) { numberofSides = 12; }
+
+        float degreeStep = 360 / numberofSides;
+        Vector3 lineStart = Vector3.zero;
+        Vector3 lineEnd = Vector3.zero;
+        Line newline;
+
+        for (int i = 0; i < numberofSides; i++)
+        {
+            lineStart = CircleRadiusPoint(position, (degreeStep * i), radius);
+            //might get some floating point squirly stuff cuz its not perfect
+            lineEnd = CircleRadiusPoint(position, (degreeStep * (i + 1)), radius);
+            newline = new Line(lineStart, lineEnd, color);
+
+            newCircle.AddLineToObject(newline);
+        }
 
         return newCircle;
     }
 
-    public static DrawableObject CreateEllipseObject(Vector3 position, float radius, int sides, Color color)
+    public static DrawableObject CreateEllipseObject(Vector3 position, Vector2 axis, int sides, Color color)
     {
         DrawableObject newEllipse = new DrawableObject();
 
-        // The heavy lift of building an ellipse is in DrawEllipse
-        // Reformat the code to use AddLineToObject(Vector3 start, Vector3 end, Color color)
+        int numberofSides = sides;
+        if (numberofSides < 3) { numberofSides = 12; }
+
+        float degreeStep = 360 / numberofSides;
+        Vector3 lineStart = Vector3.zero;
+        Vector3 lineEnd = Vector3.zero;
+        Line newline;
+
+        for (int i = 0; i < numberofSides; i++)
+        {
+            lineStart = EllipseRadiusPoint(position, (degreeStep * i), axis);
+            //might get some floating point squirly stuff cuz its not perfect
+            lineEnd = EllipseRadiusPoint(position, (degreeStep * (i + 1)), axis);
+            newline = new Line(lineStart, lineEnd, color);
+
+            newEllipse.AddLineToObject(newline);
+        }
 
         return newEllipse;
     }

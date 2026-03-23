@@ -42,7 +42,7 @@ public class DrawableGrid : MonoBehaviour
         // Lazy Singleton
         Instance = this;
     }
-
+    
     private void Start()
     {
         screenSize = new Vector3(Screen.width, Screen.height);
