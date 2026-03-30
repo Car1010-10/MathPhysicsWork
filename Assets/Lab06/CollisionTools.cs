@@ -42,21 +42,29 @@ public static class CollisionTools
 
     public static bool IsPointInCircle(Vector3 Point, Vector3 Center, float Radius)
     {
-        // stub code 
-        return true; 
+        bool result = false;
+        Vector3 DistanceVector = Point - Center;
+
+        if (DistanceVector.magnitude < Radius)
+        {
+            result = true;
+        }
+
+        return result; 
     }
 
     public static bool IsPointInRectangle(Vector3 Point, Rect Rectangle)
     {
-        // stub code 
-        return false;
+        return (Point.x > Rectangle.X) && (Point.x < (Rectangle.X + Rectangle.Width)) &&
+               (Point.y > Rectangle.Y) && (Point.y < (Rectangle.Y + Rectangle.Height));
     }
 
     //incomplete
-    public static bool SameSide(Vector3 Point, TriangleData Triangle)
+    public static bool SameSide(Vector3 Point, Vector3 PointA, Vector3 PointB)
     {
-        Vector3 crossPoint1 = Vector3.Cross(Triangle.PointB - Triangle.PointA, Point - Triangle.PointA);
-        Vector3 crossPoint2 = Vector3.Cross(Triangle.PointB - Triangle.PointA, Point - Triangle.PointA);
+        Vector3 crossPoint1 = Vector3.Cross(PointB - PointA, Point.normalized - PointA);
+        Vector3 crossPoint2 = Vector3.Cross(PointB - PointA, Point - PointA);
+        
 
         if (Vector3.Dot(crossPoint1, crossPoint2) >= 0)
         {
@@ -70,7 +78,9 @@ public static class CollisionTools
     //incomplete
     public static bool IsPointInTriangle(Vector3 Point, TriangleData Triangle)
     {
-        if (SameSide(Point, Triangle))
+        if (SameSide(Point, Triangle.PointA, Triangle.PointB) && 
+            SameSide(Point, Triangle.PointB, Triangle.PointA) && 
+            SameSide(Point, Triangle.PointC, Triangle.PointA))
         {
             return true;
         }
