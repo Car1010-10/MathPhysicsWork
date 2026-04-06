@@ -62,12 +62,12 @@ public static class CollisionTools
     //incomplete
     public static bool SameSide(Vector3 Point, Vector3 PointA, Vector3 PointB)
     {
-        Vector3 pointOne = new Vector3(Point.x, 1, 0);
-        Vector3 pointTwo = new Vector3(-Point.x, -Point.y, 0);
+        Vector3 firstPoint = new Vector3(Point.x,-Point.y, 0);
+        Vector3 secondPoint = new Vector3(-Point.x, Point.y, 0);
 
 
-        Vector3 crossPoint1 = Vector3.Cross(PointB - PointA, Point.normalized - PointA);
-        Vector3 crossPoint2 = Vector3.Cross(PointB - PointA, Point - PointA);
+        Vector3 crossPoint1 = Vector3.Cross(PointB - PointA, Point - PointA);
+        Vector3 crossPoint2 = Vector3.Cross(PointB - PointA, -Point - PointA);
         
         if (Vector3.Dot(crossPoint1, crossPoint2) >= 0)
         {
