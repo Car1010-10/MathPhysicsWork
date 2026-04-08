@@ -36,6 +36,7 @@ public class DrawableGrid : MonoBehaviour
     public int SceneIndex = 0;
     public List<List<DrawableObject>> SceneList;
     public List<string> SceneListName;
+    public Dictionary<DrawableObject, int> RemoveList;
 
     private void Awake()
     {
@@ -48,6 +49,7 @@ public class DrawableGrid : MonoBehaviour
         screenSize = new Vector3(Screen.width, Screen.height);
         origin = new Vector3(Screen.width / 2, Screen.height / 2);
 
+        RemoveList = new Dictionary<DrawableObject, int>();
         SceneList = new List<List<DrawableObject>>();
         SceneListName = new List<string>();
         SetupScenes();
@@ -65,9 +67,102 @@ public class DrawableGrid : MonoBehaviour
         TickGrid();
         TickScenes();
 
+        CleanUpScenes();
+
         DrawGrid();
 
         DrawScene();
+    }
+
+    /// <summary>
+    /// Grabs Input 
+    /// </summary>
+    void GetInput()
+    {
+        Mouse mouse = Mouse.current;
+        Keyboard kb = Keyboard.current;
+        if ((kb == null) || (mouse == null))
+        {
+            Debug.LogError("Missing Keyboard or Mouse");
+            return;
+        }
+
+        MousePosition = mouse.position.ReadValue();
+
+        if (kb.tabKey.wasPressedThisFrame)
+        {
+            SelectNextScene();
+        }
+
+        ProcessInput(kb, mouse);
+    }
+
+    public virtual void ProcessInput(Keyboard kb, Mouse mouse)
+    {
+        // Place the Origin 
+        if (mouse.middleButton.isPressed)
+        {
+            origin = MousePosition;
+        }
+
+        // Check Mouse Scroll Wheel and update Grid Size
+        bool ControlKey = kb.ctrlKey.isPressed;
+        Vector2 scroll = mouse.scroll.ReadValue();
+
+        // Adjust Grid Size 
+        if ((scroll.y > 0) && !ControlKey)
+        {
+            gridSize++;
+        }
+
+        if ((scroll.y < 0) && !ControlKey)
+        {
+            gridSize--;
+            if (gridSize <= minGridSize)
+            {
+                gridSize = minGridSize;
+            }
+        }
+
+        // Adjust Divison Count 
+        if ((scroll.y > 0) && ControlKey)
+        {
+            divisionCount++;
+        }
+
+        if ((scroll.y < 0) && ControlKey)
+        {
+            divisionCount--;
+            if (divisionCount <= minDivisionCount)
+            {
+                divisionCount = minDivisionCount;
+            }
+        }
+
+        if (kb.digit1Key.wasPressedThisFrame)
+        {
+            isDrawingDivisions = !isDrawingDivisions;
+        }
+
+        if (kb.digit2Key.wasPressedThisFrame)
+        {
+            isDrawingAxis = !isDrawingAxis;
+        }
+
+        if (kb.digit3Key.wasPressedThisFrame)
+        {
+            isDrawingOrigin = !isDrawingOrigin;
+        }
+
+        if (kb.digit4Key.wasPressedThisFrame)
+        {
+            isDrawingTheGrid = !isDrawingTheGrid;
+        }
+
+        if (kb.digit5Key.wasPressedThisFrame)
+        {
+            isDrawingObjects = !isDrawingObjects;
+        }
     }
 
     public void TickScenes()
@@ -104,6 +199,18 @@ public class DrawableGrid : MonoBehaviour
     public virtual void Tick()
     {
 
+    }
+
+    public virtual void CleanUpScenes()
+    {
+        if (RemoveList.Count == 0) {  return; } //don't do anything if there's nothing in the list
+
+        foreach(var item in RemoveList)
+        {
+            SceneList[item.Value].Remove(item.Key);
+        }
+
+        RemoveList.Clear();
     }
 
     public void SelectNextScene()
@@ -189,91 +296,6 @@ public class DrawableGrid : MonoBehaviour
             obj.Draw(this);
         }
 
-    }
-
-    /// <summary>
-    /// Grabs Input 
-    /// </summary>
-    void GetInput()
-    {
-        Mouse mouse = Mouse.current;
-        Keyboard kb = Keyboard.current;
-        if ((kb == null) || (mouse == null))
-        {
-            Debug.LogError("Missing Keyboard or Mouse");
-            return;
-        }
-
-        MousePosition = mouse.position.ReadValue();
-        // Place the Origin 
-        if (mouse.middleButton.isPressed)
-        {
-            origin = MousePosition;
-        }
-
-        // Check Mouse Scroll Wheel and update Grid Size
-        bool ControlKey = kb.ctrlKey.isPressed;
-        Vector2 scroll = mouse.scroll.ReadValue();
-
-        // Adjust Grid Size 
-        if ((scroll.y > 0) && !ControlKey)
-        {
-            gridSize++;
-        }
-
-        if ((scroll.y < 0) && !ControlKey)
-        {
-            gridSize--;
-            if (gridSize <= minGridSize)
-            {
-                gridSize = minGridSize;
-            }
-        }
-
-        // Adjust Divison Count 
-        if ((scroll.y > 0) && ControlKey)
-        {
-            divisionCount++;
-        }
-
-        if ((scroll.y < 0) && ControlKey)
-        {
-            divisionCount--;
-            if (divisionCount <= minDivisionCount)
-            {
-                divisionCount = minDivisionCount;
-            }
-        }
-
-        if (kb.digit1Key.wasPressedThisFrame)
-        {
-            isDrawingDivisions = !isDrawingDivisions;
-        }
-
-        if (kb.digit2Key.wasPressedThisFrame)
-        {
-            isDrawingAxis = !isDrawingAxis;
-        }
-
-        if (kb.digit3Key.wasPressedThisFrame)
-        {
-            isDrawingOrigin = !isDrawingOrigin;
-        }
-
-        if (kb.digit4Key.wasPressedThisFrame)
-        {
-            isDrawingTheGrid = !isDrawingTheGrid;
-        }
-
-        if (kb.digit5Key.wasPressedThisFrame)
-        {
-            isDrawingObjects = !isDrawingObjects;
-        }
-
-        if (kb.tabKey.wasPressedThisFrame)
-        {
-            SelectNextScene();
-        }
     }
 
     /// <summary>
