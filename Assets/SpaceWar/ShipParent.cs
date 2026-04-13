@@ -6,8 +6,10 @@ public class ShipParent : MovingObject
 {
     public DrawableObject ship;
     public DrawableObject thrust;
-    public float ShipMaxVelocity = 100f;
+    public float ShipMaxVelocity = 250f;
     public float ShipThrust = 25f;
+    public float ShipRotation = 90f; 
+    public float SpawnPointDistance = 15f; 
 
     public void SetupA(DrawableGrid grid, int sceneIndex)
     {
@@ -17,7 +19,7 @@ public class ShipParent : MovingObject
         thrust = new ShipAThrust();
         grid.AddObjectToScene(sceneIndex, thrust);
 
-        MaxVelocity = ShipMaxVelocity; 
+        //MaxVelocity = ShipMaxVelocity; 
     }
 
     public void SetupB(DrawableGrid grid, int sceneIndex)
@@ -28,7 +30,7 @@ public class ShipParent : MovingObject
         thrust = new ShipBThrust();
         grid.AddObjectToScene(sceneIndex, thrust);
 
-        MaxVelocity = ShipMaxVelocity;
+       //MaxVelocity = ShipMaxVelocity;
     }
 
     public override void Tick()
@@ -64,12 +66,15 @@ public class ShipParent : MovingObject
 
     public void RotateShip(float value)
     {
-        ship.Roation += (value * Time.deltaTime * Mathf.Deg2Rad);
+        Roation += (value * ShipRotation * Time.deltaTime * Mathf.Deg2Rad);
     }
 
     public void FireMissle(DrawableGrid grid, int sceneIndex)
     {
+        Vector3 spawnpoint = this.Position;
+        spawnpoint += DrawingTools.CircleRadiusPoint(Vector3.zero, GetRotationinDegrees(), SpawnPointDistance); 
 
+        Missle.MakeMissle(GetRotationinDegrees(), spawnpoint, grid, sceneIndex);
     }
 
     public void FireLaser(DrawableGrid grid, int sceneIndex)

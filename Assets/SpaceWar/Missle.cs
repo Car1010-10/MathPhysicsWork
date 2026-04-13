@@ -2,7 +2,11 @@ using UnityEngine;
 
 public class Missle : MovingObject
 {
-    public float MoveSpeed = 150f; 
+ 
+
+    public float MoveSpeed = 150f;
+
+ 
 
     public override void Initalize()
     {
@@ -36,7 +40,7 @@ public class Missle : MovingObject
         }
     }
 
-    public void MakeMissle(float angle, Vector3 spawnPosition, Grid grid, int sceneIndex)
+    public static void MakeMissle(float angle, Vector3 spawnPosition, DrawableGrid grid, int sceneIndex)
     {
         Missle missle = new Missle();
         //uses ship position and angle
@@ -45,9 +49,9 @@ public class Missle : MovingObject
         //use example in spaceWarGrid as a base
 
         missle.Position = spawnPosition;
-        //missle.CreateCollision(angle, this, sceneIndex);
-        missle.LaunchMissle(25);
-        SpaceWarGrid.self.AddObjectToScene(sceneIndex, missle);
+        missle.CreateCollision(2, grid, sceneIndex);
+        missle.LaunchMissle(angle);
+        grid.AddObjectToScene(sceneIndex, missle);
         SpaceWarGrid.self.MovingObjectlist.Add(missle);
     }
 
