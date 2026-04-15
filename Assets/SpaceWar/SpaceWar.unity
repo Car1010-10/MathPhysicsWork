@@ -245,7 +245,13 @@ MonoBehaviour:
   SceneIndex: 0
   SceneListName: []
   isPlayingGame: 0
+  isApplyingGravaity: 1
   DebugMagicCircle:
+    PerformDraw: 1
+    Position: {x: 0, y: 0, z: 0}
+    Roation: 0
+    Scale: {x: 1, y: 1, z: 1}
+  PlanetCircle:
     PerformDraw: 1
     Position: {x: 0, y: 0, z: 0}
     Roation: 0
@@ -253,6 +259,7 @@ MonoBehaviour:
   MagicCircleRadius: 200
   PlayerAScore: 0
   PlayerBScore: 0
+  ForceOfGravity: 20
 --- !u!1 &796140856
 GameObject:
   m_ObjectHideFlags: 0
