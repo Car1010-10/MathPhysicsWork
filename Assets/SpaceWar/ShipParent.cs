@@ -6,10 +6,18 @@ public class ShipParent : MovingObject
 {
     public DrawableObject ship;
     public DrawableObject thrust;
+    Line LaserObject;
+
     public float ShipMaxVelocity = 250f;
     public float ShipThrust = 75f;
     public float ShipRotation = 180f; 
-    public float SpawnPointDistance = 15f; 
+    public float SpawnPointDistance = 15f;
+
+    public bool IsDrawingLaser = false;
+    public float LaserStart = 5f;
+    public float LaserEnd = 100f;
+    public float LaserShowTime = .5f;
+    public float LaserShowCounter = 0;
 
     public void SetupA(DrawableGrid grid, int sceneIndex)
     {
@@ -18,6 +26,9 @@ public class ShipParent : MovingObject
 
         thrust = new ShipAThrust();
         grid.AddObjectToScene(sceneIndex, thrust);
+
+        LaserObject = new Line();
+        LaserObject.color = Color.yellow;
 
         //MaxVelocity = ShipMaxVelocity; 
     }
@@ -30,13 +41,34 @@ public class ShipParent : MovingObject
         thrust = new ShipBThrust();
         grid.AddObjectToScene(sceneIndex, thrust);
 
-       //MaxVelocity = ShipMaxVelocity;
+        LaserObject = new Line();
+        LaserObject.color = Color.yellow;
+
+        //MaxVelocity = ShipMaxVelocity;
     }
 
     public override void Tick()
     {
         base.Tick();
         UpdateSubObjects();
+    }
+
+    public void UpdateLaser()
+    {
+        if (!IsDrawingLaser) { return; }
+
+        LaserShowCounter -= Time.deltaTime;
+
+        if (LaserShowCounter < 0 )
+        {
+            IsDrawingLaser = false;
+            return;
+        }
+
+        LaserObject.start = this.Position + DrawingTools.CircleRadiusPoint(Vector3.zero, GetRotationinDegrees(), LaserStart);
+        LaserObject.end = this.Position + DrawingTools.CircleRadiusPoint(Vector3.zero, GetRotationinDegrees(), LaserEnd);
+
+        SpaceWarGrid.self.DrawLine(LaserObject);
     }
 
     public void UpdateSubObjects()
