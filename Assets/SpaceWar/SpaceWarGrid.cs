@@ -110,6 +110,26 @@ public class SpaceWarGrid : DrawableGrid
         ApplyGravity();
     }
 
+    public override void CleanUpScenes()
+    {
+        if (RemoveList.Count == 0) { return; } //don't do anything if there's nothing in the list
+
+        foreach (var item in RemoveList)
+        {
+            SceneList[item.Value].Remove(item.Key);
+
+            //DrawableObject thing = item.Key;
+            //MovingObject mo = (MovingObject)item.Key;
+
+            if (item.Key is MovingObject)
+            {
+                MovingObjectlist.Remove((MovingObject)item.Key);
+            }
+        }
+
+        RemoveList.Clear();
+    }
+
     public void ApplyGravity()
     {
         if (!isApplyingGravaity) { return; }
@@ -119,6 +139,20 @@ public class SpaceWarGrid : DrawableGrid
         {
             directionVector = -item.Position.normalized;
             item.Velocity += directionVector * ForceOfGravity * Time.deltaTime;
+        }
+    }
+
+    public void RecordKill(bool who)
+    {
+        if (who)
+        {
+            //ship a
+            PlayerAScore++;
+        }
+        else
+        {
+            //ship b 
+            PlayerBScore++;
         }
     }
 

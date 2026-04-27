@@ -7,6 +7,7 @@ public class ShipParent : MovingObject
     public DrawableObject ship;
     public DrawableObject thrust;
     Line LaserObject;
+    public bool IsShipA = true;
 
     public float ShipMaxVelocity = 250f;
     public float ShipThrust = 75f;
@@ -15,12 +16,14 @@ public class ShipParent : MovingObject
 
     public bool IsDrawingLaser = false;
     public float LaserStart = 5f;
-    public float LaserEnd = 100f;
+    public float LaserEnd = 150f;
     public float LaserShowTime = .5f;
     public float LaserShowCounter = 0;
 
     public void SetupA(DrawableGrid grid, int sceneIndex)
     {
+        IsShipA = true;
+
         ship = new ShipA();
         grid.AddObjectToScene(sceneIndex, ship);
 
@@ -35,6 +38,8 @@ public class ShipParent : MovingObject
 
     public void SetupB(DrawableGrid grid, int sceneIndex)
     {
+        IsShipA = false;
+
         ship = new ShipB();
         grid.AddObjectToScene(sceneIndex, ship);
 
@@ -51,6 +56,7 @@ public class ShipParent : MovingObject
     {
         base.Tick();
         UpdateSubObjects();
+        UpdateLaser();
     }
 
     public void UpdateLaser()
@@ -69,6 +75,32 @@ public class ShipParent : MovingObject
         LaserObject.end = this.Position + DrawingTools.CircleRadiusPoint(Vector3.zero, GetRotationinDegrees(), LaserEnd);
 
         SpaceWarGrid.self.DrawLine(LaserObject);
+        LaserCollisionDetection();
+    }
+
+    public void LaserCollisionDetection()
+    {
+        foreach(MovingObject mo in SpaceWarGrid.self.MovingObjectlist)
+        {
+            if (CollisionTools.DoesLineIntersectCircle(LaserObject.start, LaserObject.end, mo.Position, mo.CollisionRadius))
+            {
+                Debug.Log("Found Hit with " + mo.ToString());
+                if (mo is ShipParent)
+                {
+                    if (((ShipParent)mo).IsShipA != this.IsShipA)
+                    {
+                        SpaceWarGrid.self.RecordKill(IsShipA);
+                    }
+                }
+
+                if (mo is Missle)
+                {
+                    //cast it
+                    Missle missle = (Missle)mo;
+                    missle.RemoveMissle();
+                }
+            }
+        }
     }
 
     public void UpdateSubObjects()
@@ -111,6 +143,7 @@ public class ShipParent : MovingObject
 
     public void FireLaser(DrawableGrid grid, int sceneIndex)
     {
-
+        IsDrawingLaser = true;
+        LaserShowCounter = LaserShowTime;
     }
 }
